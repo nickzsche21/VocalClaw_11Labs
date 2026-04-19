@@ -1,139 +1,151 @@
-[![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-pink?logo=github)](https://github.com/sponsors/nickzsche21)
-# AirClaw ⚡
+# ⚡ VocalClaw
 
-### Run OpenClaw on ANY GPU with **zero API cost**
+### Multi-Agent Voice AI — ElevenLabs voices × AirClaw local LLM
 
-> Stop paying $50–$150/month in API bills.  
-> One command → local model on your machine → **$0/month. Forever.**
+> Talk to four specialized AI agents, each with a distinct voice.  
+> ElevenLabs handles all voice I/O. AirClaw handles all LLM inference — locally, at **$0/month**.
 
-Supports **RabbitLLM** (newer models: Qwen2.5, DeepSeek, Phi-3) and **AirLLM** as fallback.  
-Runs 70B models on a **4GB GPU**. Works on CPU too.
+Built for the **ElevenLabs Agentic Summer Buildathon**.
 
 ---
 
-## Install
+## What it does
 
-```bash
-pip install airclaw
+VocalClaw is a multi-agent voice AI system where:
+
+- 🎤 **You speak** → ElevenLabs STT transcribes your voice
+- 🧠 **AirClaw** routes your query to the right local LLM (Mistral, Llama, DeepSeek — your machine)
+- 🔀 **Agent orchestration** — Aria (the lead agent) decides whether to answer or hand off to a specialist
+- 🔊 **ElevenLabs TTS** synthesizes the response in each agent's distinct voice
+- 💬 **You hear** — a professional-grade AI response, spoken back to you in real-time
+
+---
+
+## The Agents
+
+| Agent | Voice | Specialty |
+|-------|-------|-----------|
+| **Aria** ✦ | Rachel (ElevenLabs) | Orchestrator, general assistant |
+| **Rex** ⚡ | Domi (ElevenLabs) | Code & technical questions |
+| **Lex** ⚖ | Bella (ElevenLabs) | Legal intelligence, contracts |
+| **Max** ◎ | Antoni (ElevenLabs) | Research & information |
+
+Aria automatically routes your query to the right specialist. Each handoff is spoken aloud with a natural transition.
+
+---
+
+## Architecture
+
+```
+Your Voice
+    │
+    ▼
+ElevenLabs STT (Scribe v1)
+    │
+    ▼
+VocalClaw Server (FastAPI + WebSocket)
+    │
+    ├──── Agent Orchestrator (Aria)
+    │         │
+    │         ├── Route to Rex? ──┐
+    │         ├── Route to Lex? ──┤
+    │         └── Route to Max? ──┤
+    │                             │
+    ▼                             ▼
+AirClaw (localhost:4096)   ←── All LLM calls
+[Mistral / Llama / DeepSeek / any HuggingFace model]
+    │
+    ▼
+ElevenLabs TTS (Turbo v2.5)
+    │
+    ▼
+Voice Response (MP3 stream → browser)
 ```
 
-Or from GitHub:
-```bash
-pip install git+https://github.com/nickzsche21/airclaw.git
-```
+**The key insight:** ElevenLabs handles what it does best — voice quality, STT accuracy, low-latency TTS. AirClaw handles what it does best — running 7B–70B models locally, for free, with full privacy.
+
+---
+
+## Why this matters
+
+| | Traditional Voice AI | VocalClaw |
+|---|---|---|
+| LLM cost | $50–$150/month | **$0** |
+| Data privacy | Cloud LLM sees everything | **100% local inference** |
+| Voice quality | Robotic TTS | **ElevenLabs — human-grade** |
+| Multi-agent | Single monolithic bot | **4 specialized agents, auto-routing** |
+| Setup | Complex | **1 command** |
 
 ---
 
 ## Quick Start
 
-```bash
-# Full automated setup (do this first — one time only)
-airclaw install
+### Prerequisites
+- Python 3.10+
+- [AirClaw](https://github.com/nickzsche21/airclaw) (for local LLM)
+- ElevenLabs API key
 
-# Then in terminal 1:
+### Run
+
+```bash
+# Terminal 1 — start local LLM
+pip install airclaw
 airclaw start
 
-# Then in terminal 2:
-openclaw restart
+# Terminal 2 — start VocalClaw
+git clone https://github.com/your-repo/vocalclaw
+cd vocalclaw
+
+export ELEVENLABS_API_KEY="your_key_here"
+bash run.sh
 ```
 
-Done. Your OpenClaw runs locally. Zero API cost.
+Open `http://localhost:8080`, hold the mic button, and talk.
 
----
+### Custom LLM endpoint
 
-## Commands
+AirClaw exposes any local model as an OpenAI-compatible API. Point VocalClaw to it:
 
-| Command | What it does |
-|---------|-------------|
-| `airclaw install` | Full automated setup |
-| `airclaw start` | Start local LLM server (Mistral 7B default) |
-| `airclaw start --model qwen` | Start with Qwen2.5 |
-| `airclaw start --model deepseek` | Start with DeepSeek |
-| `airclaw patch` | Auto-patch OpenClaw config |
-| `airclaw patch --config ~/path/config.json` | Patch specific config |
-| `airclaw restore` | Restore original config |
-| `airclaw status` | Check if server is running |
-
----
-
-## Models
-
-| Flag | Model | VRAM | Speed |
-|------|-------|------|-------|
-| `7b` ← default | Mistral-7B-Instruct | 4GB | ⚡⚡⚡ |
-| `8b` | Llama-3-8B-Instruct | 6GB | ⚡⚡⚡ |
-| `qwen` | Qwen2.5-7B | 4GB | ⚡⚡⚡ |
-| `deepseek` | DeepSeek-7B | 4GB | ⚡⚡⚡ |
-| `phi` | Phi-3-mini | 4GB | ⚡⚡⚡ fastest |
-| `13b` | Llama-2-13B | 8GB | ⚡⚡ |
-| `70b` | Llama-2-70B | 4GB | ⚡ slow |
-
-Or pass any HuggingFace model ID:
 ```bash
-airclaw start --model mistralai/Mixtral-8x7B-Instruct-v0.1
+AIRCLAW_URL=http://localhost:4096/v1 bash run.sh
 ```
+
+Works with any OpenAI-compatible server: Ollama, LM Studio, llama.cpp, vLLM.
 
 ---
 
-## Backends
+## Tech Stack
 
-AirClaw automatically uses the best available backend:
+| Layer | Technology |
+|-------|-----------|
+| Voice Input | ElevenLabs Scribe STT |
+| Voice Output | ElevenLabs Turbo TTS v2.5 |
+| Agent System | Custom Python (FastAPI + WebSocket) |
+| LLM Backend | AirClaw → local model via RabbitLLM/AirLLM |
+| Frontend | Vanilla JS + Web Audio API |
+| Server | FastAPI (async) |
 
-1. **RabbitLLM** (preferred) — newer models, faster, 4bit compression
-2. **AirLLM** (fallback) — battle-tested, wide compatibility
+---
 
-Install both:
+## About AirClaw
+
+[AirClaw](https://github.com/nickzsche21/airclaw) is an open-source Python package that runs 70B parameter models on a 4GB GPU and exposes them as an OpenAI-compatible API server. It uses RabbitLLM (preferred) or AirLLM as backends, enabling layer-by-layer inference for low-VRAM systems.
+
 ```bash
-pip install airclaw[all]
-```
-
-Or just one:
-```bash
-pip install airclaw[rabbitllm]
-pip install airclaw[airllm]
+pip install airclaw
+airclaw start  # starts Mistral 7B by default
+# → OpenAI-compatible server at localhost:4096
 ```
 
 ---
 
-## How It Works
+## Built by
 
-```
-WhatsApp / Telegram / Discord
-         ↓
-      OpenClaw
-         ↓
-  AirClaw (localhost:4096)   ← replaces OpenAI/Claude API
-         ↓
-  RabbitLLM or AirLLM
-         ↓
-  Local model on your GPU/CPU
-```
-
-AirClaw runs an OpenAI-compatible server on localhost. OpenClaw connects to it exactly like OpenAI — but everything runs on your machine.
-
----
-
-## Cost
-
-| Setup | Monthly |
-|-------|---------|
-| OpenClaw + GPT-4o | $50–$150/mo |
-| OpenClaw + Claude | $30–$120/mo |
-| **OpenClaw + AirClaw** | **$0/mo** |
-
----
-
-## Requirements
-
-- Python 3.10+
-- OpenClaw installed
-- 4GB+ GPU (or CPU — slower)
-- 8–15GB disk for model weights (downloaded once)
+[Nikhil Kumar](https://github.com/nickzsche21) — Founder, JurixAI  
+ElevenLabs Agentic Summer Buildathon 2025
 
 ---
 
 ## License
 
-MIT — free forever.
-
-*Star ⭐ if this saved you money.*
+MIT
