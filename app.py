@@ -428,20 +428,18 @@ st.markdown("""
 
 # ── AGENTS ─────────────────────────────────────────────────────────────────────
 def agent_card(name, info):
-    return f"""
-    <div class="agent {info['cls']}">
-      <div class="agent-glow" style="background:{info['accent']}"></div>
-      <span class="agent-icon">{info['emoji']}</span>
-      <span class="agent-name" style="color:{info['color']}">{name}</span>
-      <span class="agent-role">{info['role']}</span>
-      <span class="agent-tagline">{info['tagline']}</span>
-    </div>"""
+    return (
+        '<div class="agent ' + info['cls'] + '">'
+        '<div class="agent-glow" style="background:' + info['accent'] + '"></div>'
+        '<span class="agent-icon">' + info['emoji'] + '</span>'
+        '<span class="agent-name" style="color:' + info['color'] + '">' + name + '</span>'
+        '<span class="agent-role">' + info['role'] + '</span>'
+        '<span class="agent-tagline">' + info['tagline'] + '</span>'
+        '</div>'
+    )
 
-st.markdown(f"""
-<div class="agents">
-  {''.join(agent_card(n,i) for n,i in AGENTS.items())}
-</div>
-""", unsafe_allow_html=True)
+agents_html = '<div class="agents">' + ''.join(agent_card(n, i) for n, i in AGENTS.items()) + '</div>'
+st.markdown(agents_html, unsafe_allow_html=True)
 
 # ── MODE ───────────────────────────────────────────────────────────────────────
 st.markdown('<span class="sec">Mode</span>', unsafe_allow_html=True)
