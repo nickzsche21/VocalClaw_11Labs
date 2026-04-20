@@ -1,6 +1,19 @@
 import streamlit as st
 import requests
 import json
+import base64
+
+def autoplay(audio_bytes, label=""):
+    if not audio_bytes:
+        return
+    b64 = base64.b64encode(audio_bytes).decode()
+    if label:
+        st.markdown(f'<div class="vc-vtag">🔊 {label} · ElevenLabs</div>', unsafe_allow_html=True)
+    st.markdown(f"""
+    <audio autoplay style="width:100%; margin-top:4px; border-radius:8px;">
+        <source src="data:audio/mpeg;base64,{b64}" type="audio/mpeg">
+    </audio>
+    """, unsafe_allow_html=True)
 
 # ── KEYS ──────────────────────────────────────────────────────────────────────
 EL_KEY   = "sk_cabe7e77c8067fac91d6fde4bbc461b894f617353fc932a3"
@@ -400,7 +413,7 @@ if ask_btn and question:
             with st.spinner("Aria announcing handoff..."):
                 handoff_audio = tts(handoff_line, AGENTS["Aria"]["voice_id"])
             if handoff_audio:
-                st.audio(handoff_audio, format="audio/mpeg")
+                autoplay(handoff_audio, f"Aria → {chosen}")
 
         with st.spinner(f"{chosen} thinking..."):
             text = groq(chosen, question, ctx)
@@ -416,8 +429,7 @@ if ask_btn and question:
             with st.spinner(f"ElevenLabs generating {chosen}'s voice..."):
                 audio = tts(text, agent["voice_id"])
             if audio:
-                st.markdown(f'<div class="vc-vtag">🔊 Speaking as {chosen} via ElevenLabs</div>', unsafe_allow_html=True)
-                st.audio(audio, format="audio/mpeg")
+                autoplay(audio, f"Speaking as {chosen}")
 
             st.session_state.history.append({"q": question, "agent": chosen, "text": text})
         else:
@@ -436,7 +448,7 @@ if ask_btn and question:
         with st.spinner("Aria opening the council..."):
             intro_audio = tts(intro, AGENTS["Aria"]["voice_id"])
         if intro_audio:
-            st.audio(intro_audio, format="audio/mpeg")
+                autoplay(intro_audio, "Aria — Council Open")
 
         council_responses = []
         for name, agent in AGENTS.items():
@@ -457,8 +469,7 @@ if ask_btn and question:
                 with st.spinner(f"ElevenLabs: {name}'s voice..."):
                     audio = tts(text, agent["voice_id"])
                 if audio:
-                    st.markdown(f'<div class="vc-vtag">🔊 {name} · ElevenLabs</div>', unsafe_allow_html=True)
-                    st.audio(audio, format="audio/mpeg")
+                    autoplay(audio, f"{name}")
 
                 council_responses.append(f"{name}: {text}")
 
@@ -477,8 +488,7 @@ if ask_btn and question:
                 with st.spinner("Aria's final voice..."):
                     synth_audio = tts(synth, AGENTS["Aria"]["voice_id"])
                 if synth_audio:
-                    st.markdown('<div class="vc-vtag">🔊 Aria Synthesis · ElevenLabs</div>', unsafe_allow_html=True)
-                    st.audio(synth_audio, format="audio/mpeg")
+                    autoplay(synth_audio, "Aria Synthesis")
 
             st.session_state.history.append({"q": question, "agent": "Council", "text": " | ".join(council_responses)})
 
