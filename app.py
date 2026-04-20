@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1
 import requests
 import base64
 import os
@@ -92,7 +93,10 @@ def play(audio_bytes, label=""):
     b64 = base64.b64encode(audio_bytes).decode()
     if label:
         st.markdown(f'<div class="vtag">🔊 {label}</div>', unsafe_allow_html=True)
-    st.markdown(f'<script>vcQ("{b64}")</script>', unsafe_allow_html=True)
+    st.components.v1.html(
+        f'<audio autoplay style="display:none"><source src="data:audio/mpeg;base64,{b64}" type="audio/mpeg"></audio>',
+        height=0
+    )
 
 st.set_page_config(page_title="VocalClaw", page_icon="🎙️", layout="centered", initial_sidebar_state="collapsed")
 
@@ -387,23 +391,7 @@ button[kind="primary"]:hover{
 #MainMenu,footer,header,.stDeployButton{display:none !important}
 </style>
 
-<!-- SEQUENTIAL AUDIO QUEUE -->
-<script>
-(function(){
-  var q=[],busy=false;
-  window.vcQ=function(b64){
-    q.push(b64);
-    if(!busy)next();
-  };
-  function next(){
-    if(!q.length){busy=false;return;}
-    busy=true;
-    var a=new Audio('data:audio/mpeg;base64,'+q.shift());
-    a.onended=next;a.onerror=next;
-    a.play().catch(next);
-  }
-})();
-</script>
+
 """, unsafe_allow_html=True)
 
 # ── STATE ──────────────────────────────────────────────────────────────────────
