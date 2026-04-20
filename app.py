@@ -184,6 +184,10 @@ st.markdown("""
   top:0;left:0;right:0;height:1px;
   border-radius:12px 12px 0 0;
 }
+.agent.aria::before{background:#A78BFA}
+.agent.rex::before{background:#38BDF8}
+.agent.lex::before{background:#34D399}
+.agent.max::before{background:#FB923C}
 .agent-glow{
   position:absolute;top:-30px;left:50%;transform:translateX(-50%);
   width:60px;height:60px;border-radius:50%;
@@ -425,10 +429,8 @@ st.markdown("""
 # ── AGENTS ─────────────────────────────────────────────────────────────────────
 def agent_card(name, info):
     return f"""
-    <div class="agent">
+    <div class="agent {info['cls']}">
       <div class="agent-glow" style="background:{info['accent']}"></div>
-      <div class="agent::before" style="background:{info['accent']}"></div>
-      <style>.agent.{info['cls']}::before{{background:{info['accent']}}}</style>
       <span class="agent-icon">{info['emoji']}</span>
       <span class="agent-name" style="color:{info['color']}">{name}</span>
       <span class="agent-role">{info['role']}</span>
