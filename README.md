@@ -1,139 +1,131 @@
 # 🎙️ VocalClaw
-### Multi-Agent Voice AI with Zero LLM Cost
+### Multi-Agent Voice AI — Built for ElevenLabs Agentic Summer Buildathon
 
-> Built for the **ElevenLabs Agentic Summer Buildathon #1**
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Streamlit-7C3AED?style=flat-square)](https://vocalclaw11labs-6sqxrv2exz5ce62sn3n7cy.streamlit.app)
 
 ---
 
 ## What is VocalClaw?
 
-VocalClaw fuses two open technologies into something new:
+VocalClaw is a multi-agent voice AI system where **four specialized AI agents — each with a distinct ElevenLabs voice — collaborate to answer your questions.**
 
-- **ElevenLabs** — handles ALL voice I/O (STT via Scribe + TTS via Conversational AI)
-- **AirClaw** — handles ALL LLM inference, locally, for free
+You speak. Agents think. You hear the answer — automatically, in the right expert's voice.
 
-The result: a 4-agent voice AI system where every agent has a distinct voice, can hand off to each other, and costs **$0 in LLM fees** — forever.
+**The philosophy:** LLM inference should cost $0. ElevenLabs should handle everything voice-related. That's the stack.
 
----
+- **ElevenLabs** — Voice I/O (Scribe STT + TTS for all 4 agents)
+- **Groq** — Free-tier LLM inference (inspired by AirClaw's zero-cost local inference philosophy)
+- **No OpenAI. No per-token costs. No paywalls.**
 
-## The Architecture
-
-```
-You speak
-    │
-    ▼
-ElevenLabs Scribe (STT)
-    │
-    ▼
-┌─────────────────────────────────────────────┐
-│           ARIA — Orchestrator               │
-│           Voice: Rachel (ElevenLabs)        │
-│   Understands intent → routes to specialist │
-└──────────┬──────────────────────────────────┘
-           │
-    ┌──────┼──────────┐
-    ▼      ▼          ▼
-  REX     LEX        MAX
- (Code) (Legal)  (Research)
- Domi   Bella    Antoni
-  │      │          │
-  └──────┴──────────┘
-           │
-           ▼
-  ElevenLabs TTS
-  (Agent's unique voice)
-           │
-           ▼
-      You hear it
-```
-
-**Every handoff is spoken aloud.** Aria announces routing. Each specialist responds in their own distinct ElevenLabs voice.
+> *VocalClaw is architecturally inspired by [AirClaw](https://github.com/nickzsche21/AirClaw) — the belief that AI inference should be free and open. AirClaw runs locally; VocalClaw extends that philosophy to the cloud using Groq's free API.*
 
 ---
 
-## Agents
+## 🎯 Two Modes
 
-| Agent | Role | ElevenLabs Voice | Handles |
-|-------|------|-----------------|---------|
-| **Aria** | Orchestrator | Rachel | Intent detection, routing, fallback answers |
-| **Rex** | Code Specialist | Domi | Programming, debugging, architecture |
-| **Lex** | Legal Specialist | Bella | Legal research, case analysis, statutes |
-| **Max** | Research Specialist | Antoni | General research, facts, summaries |
+### Solo Mode
+You ask → Aria detects intent → routes to the right specialist → **that agent responds in their unique voice**
+
+Aria even *speaks the handoff* before passing to the specialist. That's agentic behaviour.
+
+### ⚡ Council Mode — The Killer Feature
+You ask ONE question → **all 4 agents respond in sequence, each in their own voice** → Aria synthesizes a final answer
+
+You literally hear a 4-voice AI debate. No other voice AI does this.
+
+---
+
+## The Agents
+
+| Agent | Voice | Speciality |
+|-------|-------|-----------|
+| 🎯 **Aria** | Rachel | Orchestrator — routes, synthesizes, opens council |
+| 💻 **Rex** | Domi | Code — programming, debugging, architecture |
+| ⚖️ **Lex** | Bella | Legal — Indian law, IPC, CrPC, case precedents |
+| 🔬 **Max** | Antoni | Research — science, history, economics, facts |
+
+---
+
+## Architecture
+
+```
+🎤 You speak
+     │
+     ▼
+ElevenLabs Scribe STT
+     │
+     ▼
+┌─────────────────────────┐
+│  ARIA — Orchestrator    │
+│  Intent detection       │
+│  Routes + announces     │
+└──────┬──────────────────┘
+       │ speaks handoff aloud
+  ┌────┼────────┐
+  ▼    ▼        ▼
+ REX  LEX      MAX
+(Code)(Legal)(Research)
+       │
+       ▼
+ElevenLabs TTS — Agent's unique voice
+       │
+       ▼
+🔊 Autoplays instantly
+```
+
+---
+
+## Features
+
+- 🎤 **Mic input** — record your question directly in browser
+- 🔊 **ElevenLabs Scribe STT** — transcribes your voice instantly
+- 🤖 **Real AI via Groq** (LLaMA 3) — not templates
+- 🗣️ **Aria speaks handoffs** — announces routing in her own voice
+- ⚡ **Council Mode** — 4 agents, 4 voices, 1 question, 1 synthesized answer
+- 🔁 **Autoplay** — audio fires automatically, no click needed
+- 💬 **Session history** — full conversation thread
+
+---
+
+## Live Demo
+
+👉 **[vocalclaw11labs-6sqxrv2exz5ce62sn3n7cy.streamlit.app](https://vocalclaw11labs-6sqxrv2exz5ce62sn3n7cy.streamlit.app)**
+
+Try these:
+- *"Explain IPC Section 302"* → Lex responds in Bella's voice
+- *"Write a Python web scraper"* → Rex responds in Domi's voice
+- **Council Mode** + *"Should I raise a seed round or bootstrap?"* → hear all 4 voices debate it
+
+---
+
+## Run Locally
+
+```bash
+git clone https://github.com/nickzsche21/VocalClaw_11Labs
+cd VocalClaw_11Labs
+pip install streamlit requests
+streamlit run app.py
+```
 
 ---
 
 ## Why This Wins
 
-Most "agentic voice AI" demos use OpenAI for inference — $0.01–0.06 per 1K tokens, forever. VocalClaw runs AirClaw locally: **inference is free, unlimited, and private.**
+Most voice AI = one voice, one brain. Generic.
 
-ElevenLabs does what it does best — the most natural, expressive TTS in the world. AirClaw does what it does best — local, OpenAI-compatible inference at zero marginal cost.
+VocalClaw = 4 specialized agents, 4 distinct voices, free inference, spoken handoffs, and a Council Mode where agents literally debate your question out loud.
 
-This is the architecture that makes voice AI economically viable at scale.
-
----
-
-## Tech Stack
-
-- **Voice Input**: ElevenLabs Scribe (STT)
-- **Voice Output**: ElevenLabs TTS (4 distinct voices)
-- **LLM Inference**: AirClaw (local, OpenAI-compatible)
-- **Orchestration**: Python multi-agent system with intent classification
-- **Frontend**: HTML/JS, WebSocket mic capture
-- **Backend**: FastAPI
-
----
-
-## Setup & Run
-
-### 1. Install AirClaw
-```bash
-pip install airclaw
-airclaw start
-# Runs OpenAI-compatible API at localhost:1234
-```
-
-### 2. Clone & Configure
-```bash
-git clone https://github.com/nickzsche21/AirClaw-VocalClaw_11Labs
-cd AirClaw-VocalClaw_11Labs
-pip install -r requirements.txt
-```
-
-### 3. Set API Key
-```bash
-export ELEVENLABS_API_KEY="your_key_here"
-```
-
-### 4. Run
-```bash
-bash run.sh
-# Open localhost:8080
-# Hold mic button → talk → hear agents respond
-```
-
----
-
-## Demo Flow
-
-1. Ask: *"Can you explain the difference between IPC Section 302 and 304?"*
-2. Aria detects legal intent → announces handoff to Lex
-3. **Lex responds in Bella's voice** with a structured legal breakdown
-4. Ask: *"Write me a Python function to parse that statute text"*
-5. Aria detects code intent → announces handoff to Rex
-6. **Rex responds in Domi's voice** with working code
-
-Two questions. Two different voices. One seamless system.
+**Lex is a prototype of the world's first voice-native Indian legal AI** — built on real domain depth from JurixAI (backed by NSRCEL IIM Bangalore + Perplexity AI Fellowship).
 
 ---
 
 ## Built By
 
-**Nick** — Founder, JurixAI (AI legal research for the Indian market)
+**Nick** — Founder, [JurixAI](https://jurixoneai.com)
 
-> JurixAI is backed by NSRCEL IIM Bangalore, IIM Lucknow EIC, AIC-BHU, and the Perplexity AI Fellowship. VocalClaw's Lex agent is a direct prototype of what localized legal AI agents sound like in production.
+Built in one night for the **ElevenLabs Agentic Summer Buildathon #1**
 
 ---
 
 ## License
-
-MIT — build on it.
+MIT
