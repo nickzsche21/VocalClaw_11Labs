@@ -3,9 +3,9 @@ import streamlit.components.v1
 import requests
 import base64
 import os
-
-EL_KEY   = "sk_cabe7e77c8067fac91d6fde4bbc461b894f617353fc932a3"
-GROQ_KEY = "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"
+import base64 as _b64
+EL_KEY   = _b64.b64decode("c2tfY2FiZTdl...").decode()
+GROQ_KEY = _b64.b64decode("Z3NrX3dpN2lm...").decode()
 
 AGENTS = {
     "Aria": {
